@@ -33,10 +33,12 @@ let sourceId = null;
 
 // Start application
 function init() {
+    log(`initializing ${Me.metadata.name}`);
 }
 
 // Add the button to the panel
 function enable() {
+    log(`enabling ${Me.metadata.name}`);
     panelButton = new St.Bin({
         style_class: "panel-button",
     });
@@ -51,10 +53,8 @@ function enable() {
 
 // Remove the added button from panel
 function disable() {
+    log(`disabling ${Me.metadata.name}`);
     Main.panel._centerBox.remove_child(panelButton);
-    panelButtonText = null;
-    session = null;
-    dollarQuotation = null;
 
     if (panelButton) {
         panelButton.destroy();
@@ -70,6 +70,7 @@ function disable() {
 // Handle Requests API Dollar
 async function handle_request_dollar_api() {
     try {
+        // Create a new Soup Session
         if (!session) {
             session = new Soup.Session({ timeout: 10 });
         }
@@ -86,12 +87,12 @@ async function handle_request_dollar_api() {
 
             // Get the value of Dollar Quotation
             dollarQuotation = body_response["USDBRL"]["bid"];
-            dollarQuotation = dollarQuotation.split(",");
+            dollarQuotation = dollarQuotation.split(".");
             dollarQuotation = dollarQuotation[0] + "." + dollarQuotation[1].substring(0, 2);
 
             // Sext text in Widget
             panelButtonText = new St.Label({
-                text: "R$ " + dollarQuotation,
+                text: "BRL: $" + dollarQuotation,
                 y_align: Clutter.ActorAlign.CENTER,
             });
             panelButton.set_child(panelButtonText);
@@ -102,8 +103,9 @@ async function handle_request_dollar_api() {
             response = undefined;
         });
     } catch (error) {
+        log(`Traceback Error in [handle_request_dollar_api]: ${error}`);
         panelButtonText = new St.Label({
-            text: "R$ " + _dollarQuotation + " * ",
+            text: "BRL: $" + _dollarQuotation +  " * ",
             y_align: Clutter.ActorAlign.CENTER,
         });
         panelButton.set_child(panelButtonText);
