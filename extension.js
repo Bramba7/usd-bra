@@ -99,7 +99,7 @@ async function handle_request_dollar_api() {
  
             // Sent text in Widget
             panelButtonText = new St.Label({
-                text: upDownIcon + " BRL: $" + dollarQuotation,
+                text: " BRL: $" + dollarQuotation + " " + upDownIcon,
                 y_align: Clutter.ActorAlign.CENTER,
             });
             panelButton.set_child(panelButtonText);
