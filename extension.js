@@ -28,17 +28,15 @@ const PanelMenu = imports.ui.panelMenu;
 let panelButton;
 let panelButtonText;
 let session;
-let dollarQuotation;
 let sourceId = null;
 
 // Start application
 function init() {
-    log(`initializing ${Me.metadata.name}`);
+//    log(`initializing ${Me.metadata.name}`);
 }
 
 // Add the button to the panel
 function enable() {
-    log(`enabling ${Me.metadata.name}`);
     panelButton = new St.Bin({
         style_class: "panel-button",
     });
@@ -53,7 +51,8 @@ function enable() {
 
 // Remove the added button from panel
 function disable() {
-    log(`disabling ${Me.metadata.name}`);
+    panelButtonText = null;
+    session = null;
     Main.panel._centerBox.remove_child(panelButton);
 
     if (panelButton) {
@@ -69,6 +68,10 @@ function disable() {
 
 // Handle Requests API Dollar
 async function handle_request_dollar_api() {
+    let dollarQuotation = null;
+    let upDown = null;
+    let upDownIcon = null;
+
     try {
         // Create a new Soup Session
         if (!session) {
@@ -86,13 +89,17 @@ async function handle_request_dollar_api() {
             const body_response = JSON.parse(response);
 
             // Get the value of Dollar Quotation
+            upDown = body_response["USDBRL"]["varBid"];     
             dollarQuotation = body_response["USDBRL"]["bid"];
             dollarQuotation = dollarQuotation.split(".");
             dollarQuotation = dollarQuotation[0] + "." + dollarQuotation[1].substring(0, 2);
-
-            // Sext text in Widget
+                 
+            
+            parseFloat(upDown) > 0 ? upDownIcon = "⬆" : upDownIcon = "⬇";
+ 
+            // Sent text in Widget
             panelButtonText = new St.Label({
-                text: "BRL: $" + dollarQuotation,
+                text: upDownIcon + " BRL: $" + dollarQuotation,
                 y_align: Clutter.ActorAlign.CENTER,
             });
             panelButton.set_child(panelButtonText);
